@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#11150d" />
+  <title>SOILITARY — A Lone Soldier's Harvest</title>
+  <meta name="description" content="SOILITARY — một tựa game nông trại nhỏ về người lính trở về nhà, gieo lại mùa màng trong 12 ngày." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="game-frame" id="game-frame">
+      <canvas id="game" width="480" height="272" aria-label="Khu vườn của SOILITARY"></canvas>
+      <div class="screen-shade" aria-hidden="true"></div>
+      <div class="screen-scanlines" aria-hidden="true"></div>
+
+      <!-- HUD -->
+      <div id="hud" class="hud is-hidden">
+        <div class="hud-top">
+          <div class="status-card pixel-panel">
+            <div class="status-row">
+              <span id="day-label" class="stencil">NGÀY 01</span>
+              <span id="weather-label" class="weather">☀ Nắng</span>
+            </div>
+            <div class="clock-row">
+              <span id="clock-label" class="clock">06:00</span>
+              <div class="day-track"><i id="day-fill"></i></div>
+            </div>
+          </div>
+
+          <div class="stat-stack">
+            <div class="stat-line coins-line" title="Xu">
+              <span class="stat-icon">◈</span>
+              <span id="coins-label">120</span>
+            </div>
+            <div class="stat-line" title="Năng lượng">
+              <span class="stat-icon bolt">⚡</span>
+              <div class="meter"><i id="energy-fill"></i></div>
+              <span id="energy-label" class="stat-num">100</span>
+            </div>
+            <div class="stat-line" title="Tinh thần">
+              <span class="stat-icon heart">♥</span>
+              <div class="meter morale-meter"><i id="morale-fill"></i></div>
+              <span id="morale-label" class="stat-num">50</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="objective-chip" class="objective-chip pixel-panel">
+          <span class="obj-kicker">NHIỆM VỤ</span>
+          <span id="objective-text">Cuốc 3 ô đất</span>
+          <span id="objective-count" class="obj-count">0/3</span>
+        </div>
+
+        <div id="prompt" class="prompt is-hidden">
+          <span class="prompt-key">E</span>
+          <span id="prompt-text">Cuốc đất</span>
+        </div>
+
+        <div id="hotbar" class="hotbar" aria-label="Túi hạt giống"></div>
+
+        <div class="corner-actions">
+          <button id="btn-journal" class="round-btn" title="Nhật ký (J)" aria-label="Mở nhật ký">
+            <span class="glyph">▤</span><span class="round-label">NHẬT KÝ</span>
+          </button>
+          <button id="btn-eat" class="round-btn" title="Ăn khẩu phần (R)" aria-label="Ăn khẩu phần">
+            <span class="glyph">▣</span><span class="round-label">KHẨU PHẦN</span>
+          </button>
+          <button id="btn-pause" class="round-btn" title="Tạm dừng (Esc)" aria-label="Tạm dừng">
+            <span class="glyph">Ⅱ</span>
+          </button>
+        </div>
+
+        <div id="touch-controls" class="touch-controls">
+          <div id="joystick" class="joystick" aria-label="Cần điều khiển">
+            <div class="joystick-ring"></div>
+            <div id="joystick-knob" class="joystick-knob"></div>
+          </div>
+          <div class="touch-actions">
+            <button id="touch-eat" class="touch-btn small" aria-label="Ăn khẩu phần">R</button>
+            <button id="touch-action" class="touch-btn action" aria-label="Hành động">E</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title screen -->
+      <div id="title-screen" class="title-screen">
+        <div class="title-grain" aria-hidden="true"></div>
+        <div class="title-topline">
+          <span class="title-coord">34°12′N · 118°28′W</span>
+          <button id="btn-sound" class="sound-btn" aria-label="Bật tắt âm thanh">♪ ÂM THANH: BẬT</button>
+        </div>
+
+        <div class="title-inner">
+          <div class="title-tag">A LONE SOLDIER'S HARVEST</div>
+          <h1 class="logo" aria-label="SOILITARY">
+            <span class="logo-soil">SOIL</span><span class="logo-itary">ITARY</span>
+          </h1>
+          <p class="title-sub">Một người lính. Một mảnh vườn. Mười hai ngày để trở về nhà.</p>
+
+          <div class="title-menu">
+            <button class="pixel-btn primary" data-menu="new">BẮT ĐẦU MÙA MỚI</button>
+            <button class="pixel-btn" data-menu="continue" id="btn-continue">TIẾP TỤC</button>
+            <button class="pixel-btn ghost" data-menu="howto">HƯỚNG DẪN</button>
+          </div>
+
+          <div class="title-note">
+            <span class="tick">▸</span> Trồng trọt, chăm vật nuôi, đọc thư, và sống chậm lại.
+          </div>
+        </div>
+
+        <div class="title-footer">
+          <span>16×16 FARM RPG ASSETS</span>
+          <span class="title-footer-dot">·</span>
+          <span>MỘT TỰA GAME NHỎ VỀ VIỆC TRỞ VỀ</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading-screen" class="loading-screen">
+        <div class="loading-box">
+          <div class="loading-title">SOILITARY</div>
+          <div class="loading-sub">ĐANG DỰNG LẠI MÙA MÀNG...</div>
+          <div class="loading-bar"><i id="loading-fill"></i></div>
+        </div>
+      </div>
+
+      <div id="modal-root" class="modal-root is-hidden" aria-live="polite"></div>
+      <div id="toast-root" class="toast-root" aria-live="polite"></div>
+
+      <div id="rotate-hint" class="rotate-hint" role="status">
+        <div class="rotate-icon">↻</div>
+        <strong>XOAY NGANG</strong>
+        <span>Để chơi SOILITARY</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
