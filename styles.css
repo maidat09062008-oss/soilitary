@@ -731,6 +731,132 @@ button:focus-visible {
   transition: width 0.2s ease;
 }
 
+/* ============ Scene transition / location ============ */
+.scene-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  background: #080b05;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.scene-fade.is-active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* The room deserves to breathe: farming controls live outside. */
+.hud.is-house #hotbar,
+.hud.is-house #objective-chip {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+.hud #hotbar,
+.hud #objective-chip {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* ============ NPC dialogue / village journal ============ */
+.npc-dialog {
+  display: grid;
+  gap: 10px;
+}
+.npc-line {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 2px solid var(--wheat);
+  background: rgba(217, 164, 65, 0.06);
+  color: var(--cream);
+  font-size: 17px;
+  line-height: 1.35;
+}
+.npc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-family: var(--mono-font);
+  font-size: 9px;
+  color: var(--muted);
+}
+.npc-hearts { color: var(--red); letter-spacing: 2px; }
+.npc-quest {
+  padding: 9px 10px;
+  background: #141a0e;
+  border: 1px solid #3a4629;
+}
+.npc-quest .q-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--pixel-font);
+  font-size: 7px;
+  color: var(--wheat-bright);
+  letter-spacing: 0.6px;
+}
+.npc-quest .q-body {
+  margin-top: 5px;
+  font-size: 15px;
+  color: var(--cream-dim);
+  line-height: 1.25;
+}
+.npc-quest.done { border-color: #546335; }
+.npc-quest.done .q-head { color: var(--olive-bright); }
+.npc-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.villager-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+@media (max-width: 760px) {
+  .villager-list { grid-template-columns: 1fr; }
+}
+.villager-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #171d11;
+  border: 1px solid #333d26;
+}
+.villager-avatar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  color: #15180d;
+  font-family: var(--pixel-font);
+  font-size: 9px;
+  border: 1px solid rgba(241, 231, 200, 0.25);
+  image-rendering: pixelated;
+}
+.villager-main { flex: 1; min-width: 0; }
+.villager-name {
+  font-family: var(--mono-font);
+  font-size: 12px;
+  color: var(--cream);
+}
+.villager-role {
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.villager-state {
+  text-align: right;
+  font-family: var(--mono-font);
+  font-size: 9px;
+  color: var(--wheat);
+  white-space: nowrap;
+}
+.villager-state .hearts { display: block; color: var(--red); font-size: 11px; letter-spacing: 1px; margin-top: 2px; }
+
 /* ============ Modal ============ */
 .modal-root {
   position: absolute;
@@ -1074,14 +1200,17 @@ button:focus-visible {
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 70;
+  z-index: 49;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   pointer-events: none;
   width: min(80%, 460px);
+  transition: opacity 0.15s ease;
 }
+.modal-root:not(.is-hidden) ~ .toast-root { opacity: 0; }
+.game-frame.is-house .toast-root { top: 11%; }
 .toast {
   padding: 7px 11px;
   background: rgba(15, 19, 9, 0.95);
